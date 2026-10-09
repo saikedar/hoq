@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>House of Quality — Guided Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f0e6; --panel:#fffdf7; --panel2:#faf6ec; --ink:#17212f; --muted:#667085; --line:#d8d0bd;
+  --accent:#1e4bd1; --accent-ink:#ffffff; --tint:#e4ebff; --warm:#d9811a; --good:#15803d; --good-bg:#e3f4e8;
+  --bad:#b4281c; --bad-bg:#fbe7e4; --note-bg:#eef2ff; --shadow:0 1px 0 rgba(23,33,47,.04),0 8px 24px rgba(23,33,47,.07);
+  --pos:rgba(21,128,61,.18); --neg:rgba(180,40,28,.18);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1522; --panel:#152033; --panel2:#111b2c; --ink:#e7ecf6; --muted:#93a0b6; --line:#2a3a56;
+    --accent:#7ba3ff; --accent-ink:#0b1220; --tint:#1c2c52; --warm:#f0a64a; --good:#4ade80; --good-bg:#12301f;
+    --bad:#ff8a7a; --bad-bg:#3a1a17; --note-bg:#17254a; --shadow:0 8px 24px rgba(0,0,0,.35);
+    --pos:rgba(74,222,128,.22); --neg:rgba(255,138,122,.22);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1522; --panel:#152033; --panel2:#111b2c; --ink:#e7ecf6; --muted:#93a0b6; --line:#2a3a56;
+  --accent:#7ba3ff; --accent-ink:#0b1220; --tint:#1c2c52; --warm:#f0a64a; --good:#4ade80; --good-bg:#12301f;
+  --bad:#ff8a7a; --bad-bg:#3a1a17; --note-bg:#17254a; --shadow:0 8px 24px rgba(0,0,0,.35);
+  --pos:rgba(74,222,128,.22); --neg:rgba(255,138,122,.22);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 90px); height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.6 var(--sans);min-height:100%;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;background-position:-1px -1px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:var(--bg);opacity:.9;z-index:-1}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+h2{font-size:1.65rem;letter-spacing:-.01em}
+h3{font-size:1.1rem}
+p{margin:.55em 0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:1260px;margin:0 auto;padding:0 18px 60px}
+
+/* header */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:0 0 14px 14px;
+  box-shadow:var(--shadow);padding:10px 16px 12px;margin-bottom:22px}
+.hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:1.05rem}
+.brand svg{width:30px;height:30px}
+.brand small{display:block;font:500 11px var(--mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.spacer{flex:1}
+.who{font:500 12.5px var(--mono);color:var(--muted)}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:9px}
+.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--warm));width:0;transition:width .4s}
+.stepper{display:flex;gap:6px;margin-top:9px;overflow-x:auto;padding-bottom:2px}
+.pill{flex:0 0 auto;min-width:30px;height:30px;padding:0 9px;border-radius:99px;border:1.5px solid var(--line);background:var(--panel2);
+  font:500 12px var(--mono);display:grid;place-items:center;color:var(--muted)}
+.pill.done{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pill.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--tint);background:var(--panel)}
+.pill.cur.done{background:var(--accent);color:var(--accent-ink)}
+.pill:disabled{opacity:.45;cursor:not-allowed}
+
+/* layout */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px 24px}
+.stage{display:grid;gap:20px;grid-template-columns:minmax(0,1fr);grid-template-areas:"story" "house" "q"}
+.story{grid-area:story}.house-panel{grid-area:house}.qs{grid-area:q;display:grid;gap:16px}
+@media (min-width:1060px){
+  .stage{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);grid-template-areas:"story house" "q house";align-items:start}
+  .house-panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 118px)}
+}
+.kicker{font:500 11.5px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.lead{font-size:1.05rem;color:var(--ink)}
+.callout{border-left:4px solid var(--warm);background:var(--panel2);border-radius:0 10px 10px 0;padding:10px 14px;margin:14px 0}
+.callout b.t{display:block;font:600 11.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--warm);margin-bottom:2px}
+.callout.blue{border-left-color:var(--accent)} .callout.blue b.t{color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--panel2);border-radius:99px;padding:3px 11px;font-size:13px}
+.formula{font:500 15px var(--mono);background:var(--note-bg);border-radius:10px;padding:10px 14px;margin:12px 0;overflow-x:auto;white-space:nowrap}
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tl div{border-top:3px solid var(--accent);padding-top:6px;font-size:13.5px}
+.tl b{display:block;font:600 18px var(--serif)}
+ol.phases{padding-left:0;list-style:none;display:grid;gap:6px;margin:10px 0;counter-reset:ph}
+ol.phases li{counter-increment:ph;display:flex;gap:10px;align-items:flex-start;font-size:14px}
+ol.phases li::before{content:counter(ph);flex:0 0 24px;height:24px;border-radius:50%;background:var(--panel2);border:1.5px solid var(--line);display:grid;place-items:center;font:500 12px var(--mono)}
+ol.phases li.hl::before{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.src{font-size:12.5px;color:var(--muted)}
+
+/* house panel */
+.hp-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.hp-head h3{font-size:1rem}
+.tag{font:500 11px var(--mono);color:var(--muted);letter-spacing:.04em}
+.house-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:6px}
+.house{min-width:700px}
+.house svg{display:block;width:100%;height:auto}
+.room{transition:opacity .3s}
+.house:not([data-focus~="all"]) .room{opacity:.2}
+.house[data-focus~="whats"] .room-whats,.house[data-focus~="hows"] .room-hows,.house[data-focus~="matrix"] .room-matrix,
+.house[data-focus~="roof"] .room-roof,.house[data-focus~="basement"] .room-basement,.house[data-focus~="right"] .room-right{opacity:1}
+.house.pickable .room{cursor:pointer}
+.cell{fill:var(--panel);stroke:var(--line);stroke-width:1}
+.cell.band{fill:var(--panel2)}
+.cell.ed{cursor:pointer}.cell.ed:hover,.cell.ed:focus{fill:var(--tint);outline:none;stroke:var(--accent)}
+.bar{fill:var(--accent);opacity:.18}
+.cap{font:600 10px var(--mono);letter-spacing:.08em;fill:var(--accent)}
+.sub{font:400 10.5px var(--sans);fill:var(--muted)}
+.lbl{font:500 12.5px var(--sans);fill:var(--ink)}
+.hl{font:500 11.5px var(--sans);fill:var(--ink);text-anchor:middle}
+.dirt{font:500 10.5px var(--mono);fill:var(--ink);text-anchor:middle}
+.wv{font:600 15px var(--mono);fill:var(--ink);text-anchor:middle}
+.wp{font:400 9.5px var(--mono);fill:var(--muted);text-anchor:middle}
+.num{font:400 9px var(--mono);fill:var(--muted)}
+.tpv{font:600 14px var(--mono);fill:var(--ink);text-anchor:middle}
+.rk{font:600 9.5px var(--mono);fill:var(--warm)}
+.sym9o{fill:none;stroke:var(--ink);stroke-width:2;pointer-events:none}
+.sym9i{fill:var(--ink);pointer-events:none}
+.sym3{fill:none;stroke:var(--ink);stroke-width:2;pointer-events:none}
+.sym1{fill:none;stroke:var(--ink);stroke-width:2;pointer-events:none}
+.rf{stroke:var(--line);stroke-width:1;fill:var(--panel)}
+.rf.p{fill:var(--pos)}.rf.n{fill:var(--neg)}
+.rf.ed{cursor:pointer}.rf.ed:hover,.rf.ed:focus{stroke:var(--accent);stroke-width:2;outline:none}
+.rft{font:700 15px var(--mono);text-anchor:middle;pointer-events:none}
+.rft.p{fill:var(--good)}.rft.n{fill:var(--bad)}
+.room.sel .cell,.room.sel .rf{stroke:var(--accent);stroke-width:2}
+.dotU{fill:var(--accent)}.dotA{fill:var(--warm)}.dotB{fill:#7a5af8}
+.tick{stroke:var(--line);stroke-width:1}
+.dash{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin:10px 2px 2px;align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend svg{width:18px;height:18px}
+.hint-scroll{font-size:12px;color:var(--muted);margin:6px 2px 0}
+@media (min-width:760px){.hint-scroll{display:none}}
+
+/* tools */
+.tool{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.tool h4{margin:0 0 6px;font:600 11.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.wrow{display:grid;grid-template-columns:minmax(110px,1.3fr) minmax(90px,2fr) 26px 54px;gap:8px;align-items:center;font-size:13.5px;padding:2px 0}
+.wrow .v{font:600 13px var(--mono);text-align:right}.wrow .p{font:400 12px var(--mono);color:var(--muted);text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btn{border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;font-weight:500;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.readout{min-height:44px;background:var(--note-bg);border-radius:10px;padding:8px 12px;font-size:13.5px;margin-top:8px}
+.bars{display:grid;gap:6px;margin-top:8px}
+.brow{display:grid;grid-template-columns:150px 1fr 88px;gap:8px;align-items:center;font-size:13px}
+.brow .track{height:16px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.brow .track i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.brow:first-child .track i{background:var(--warm)}
+.brow .val{font:500 12px var(--mono);text-align:right}
+@media(max-width:520px){.brow{grid-template-columns:100px 1fr 74px}.wrow{grid-template-columns:90px 1fr 22px 46px}}
+table.t{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:right}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{font:600 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+table.t tr.top td{background:var(--tint);font-weight:600}
+.cas{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cas button{border:1.5px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 6px;font-size:12.5px;text-align:center}
+.cas button.on{border-color:var(--accent);background:var(--tint);font-weight:600}
+@media(max-width:520px){.cas{grid-template-columns:repeat(2,1fr)}}
+.roompanel{background:var(--note-bg);border-radius:10px;padding:10px 14px;margin-top:10px;min-height:92px;font-size:14px}
+.roompanel b{font-family:var(--serif)}
+
+/* questions */
+.qcard{background:var(--panel);border:1.5px solid var(--accent);border-radius:16px;box-shadow:var(--shadow);padding:18px 22px}
+.qcard.locked{border-color:var(--line)}
+.qhead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.qtag{font:600 11.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.qkind{font:500 11px var(--mono);color:var(--muted)}
+.qprompt{font-weight:500;font-size:1.02rem;margin:.3em 0 .8em}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--panel2);border-radius:12px;padding:9px 12px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .ol{flex:0 0 24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:500 12px var(--mono)}
+.opt.chosen{border-color:var(--accent);background:var(--tint)}.opt.chosen .ol{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-bg)}.opt.right .ol{background:var(--good);border-color:var(--good);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}.opt.wrong .ol{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--panel2);border:1.5px solid var(--line);border-radius:10px;padding:9px 12px}
+input[type=text]{max-width:200px}
+textarea{min-height:130px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--tint)}
+.count{font:400 12px var(--mono);color:var(--muted);margin-top:4px}
+.qfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.warn{color:var(--bad);font-size:13px}
+.fb{margin-top:12px;border-radius:12px;padding:11px 14px;font-size:14.5px}
+.fb.ok{background:var(--good-bg);border:1px solid var(--good)}.fb.bad{background:var(--bad-bg);border:1px solid var(--bad)}.fb.note{background:var(--note-bg);border:1px solid var(--accent)}
+.fb ul{margin:.3em 0 0;padding-left:1.2em}
+.stamp{font:400 12px var(--mono);color:var(--muted);margin-top:8px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:22px;align-items:center;flex-wrap:wrap}
+.nav .msg{font-size:13px;color:var(--muted)}
+
+/* welcome / record */
+.hero{display:grid;gap:22px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(2rem,4.4vw,3.1rem);letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:italic}
+.field{display:grid;gap:4px;margin:12px 0}
+.field label{font:600 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field input{max-width:none}
+.steps3{display:grid;gap:8px;margin:14px 0;padding:0;list-style:none}
+.steps3 li{display:flex;gap:10px;font-size:14.5px}
+.steps3 li b{font:600 12px var(--mono);color:var(--accent);flex:0 0 22px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.kpi b{display:block;font:700 1.7rem var(--serif)}.kpi span{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.rep-item{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:10px 0;background:var(--panel)}
+.rep-item h4{margin:0 0 4px;font:600 13px var(--mono);color:var(--accent)}
+.rep-item .q{font-weight:500}
+.rep-item .r{margin-top:6px;white-space:pre-wrap}
+.res-ok{color:var(--good);font-weight:600}.res-bad{color:var(--bad);font-weight:600}.res-note{color:var(--accent);font-weight:600}
+table.log{width:100%;border-collapse:collapse;font-size:13px}
+table.log th,table.log td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.log th{font:600 11px var(--mono);color:var(--muted);text-transform:uppercase}
+.tablewrap{overflow-x:auto}
+.savemsg{font-size:14px;margin-top:10px}
+
+@media print{
+  .noprint{display:none!important}
+  body{background:#fff!important;color:#000}body::before{display:none}
+  .card,.rep-item{box-shadow:none!important}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="hdr noprint" id="hdr">
+    <div class="hrow">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 15 16 3l13 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" style="color:var(--accent)"/><rect x="6" y="15" width="20" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ink)"/><path d="M6 21.5h20M16 15v13" stroke="currentColor" stroke-width="1.2" style="color:var(--muted)"/></svg>
+        <div>House of Quality<small>Guided tour · Operations Management</small></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="who" id="who"></div>
+    </div>
+    <div class="prog"><i id="progbar"></i></div>
+    <div class="stepper" id="stepper"></div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+"use strict";
+/* ============================== DATA ============================== */
+const NEEDS=[{name:'Long-Lasting Power',w:9},{name:'Fast Recharging',w:8},{name:'Portability / Weight',w:7},{name:'Quiet Operation',w:5}];
+const HOWS=[
+ {name:'Battery Capacity',unit:'Wh',dir:'up',target:'2000+ Wh'},
+ {name:'Input Charging Rate',unit:'W',dir:'up',target:'1000+ W'},
+ {name:'Total Unit Weight',unit:'kg',dir:'down',target:''},
+ {name:'Fan Noise Level',unit:'dB',dir:'down',target:''},
+ {name:'Inverter Efficiency',unit:'%',dir:'up',target:''}];
+const R0=[[9,1,1,0,9],[1,9,0,0,0],[9,1,9,0,1],[0,1,0,9,1]];
+const ROOF0={'0-1':3,'0-2':-9,'1-2':3,'1-3':-9};
+const COMP={us:[3,2,4,4],a:[4,4,3,3],b:[3,3,3,2]};   // illustrative
+function freshModel(){return{w:NEEDS.map(n=>n.w),R:R0.map(r=>r.slice()),roof:Object.assign({},ROOF0),dir:HOWS.map(h=>h.dir),us:COMP.us.slice(),norm:false};}
+const tp=m=>HOWS.map((_,j)=>m.w.reduce((s,w,i)=>s+w*m.R[i][j],0));
+
+const ROOMS={
+ whats:{t:'Left wall — Customer needs (the “Whats”)',d:'The voice of the customer in the customer’s own words, gathered from interviews, focus groups and surveys. Each need carries an importance rating (1–5 in Lucidchart’s smartphone example, 1–9 in the Anker case).'},
+ hows:{t:'Ceiling — Technical requirements (the “Hows”)',d:'The design team’s answer to every What: measurable engineering characteristics, each with a unit, a target value and a direction of improvement (maximise, minimise or hit a nominal value).'},
+ matrix:{t:'Main room — Relationship matrix',d:'Where Whats meet Hows. Each cell scores how strongly a technical characteristic influences a customer need — typically 9 strong, 3 moderate, 1 weak, empty for none.'},
+ roof:{t:'Roof — Interrelationships between Hows',d:'Pairwise correlations among the technical requirements. Synergies (+) and trade-offs (−) are exposed early so the team can compromise deliberately or innovate its way out.'},
+ basement:{t:'Basement — Prioritised technical requirements',d:'Technical priority of each How: the sum of (customer importance × relationship strength) down its column, usually also shown as a share of the total, together with target values.'},
+ right:{t:'Right wall — Competitive assessment',d:'How you and your rivals perform on each customer need (perception), plus lab-measured technical benchmarks. It does not change the priority scores, but shows where you are exposed or ahead.'}
+};
+const CAS=[
+ {t:'House 1 · Product planning',w:'Customer needs',h:'Product design characteristics',ex:'“Easy to use” → door closing force (N), closing sound level (dB).'},
+ {t:'House 2 · Parts deployment',w:'Product design characteristics',h:'Critical part characteristics',ex:'Low closing force → the spring constant of a component.'},
+ {t:'House 3 · Process planning',w:'Critical part characteristics',h:'Key manufacturing processes',ex:'Spring constant → machining tolerances and material-handling steps.'},
+ {t:'House 4 · Quality control / operations',w:'Key manufacturing processes',h:'Production control requirements',ex:'Machining step → quality checks, inspection points, operator training protocols.'}
+];
+
+/* ============================== QUESTIONS ============================== */
+const QS=[
+ {id:'q1',type:'mcq',prompt:'Where and when was the House of Quality matrix first put into practice?',
+  options:['Toyota, Japan — 1985','Mitsubishi Heavy Industries’ Kobe shipyard — 1972','Xerox, USA — 1981','Ford Motor Company, USA — 1983'],correct:1,
+  explain:'Dr. Yoji Akao conceptualised QFD in 1966, but the matrix itself was first applied at Mitsubishi’s Kobe shipyard in 1972 while designing a complex oil tanker. Xerox and Ford carried it to the US in the early 1980s.'},
+ {id:'q2',type:'mcq',prompt:'A design team worries that raising engine horsepower will hurt fuel efficiency. Which room of the house is designed to surface exactly this kind of conflict?',
+  options:['The left wall (customer needs)','The relationship matrix','The roof','The basement'],correct:2,
+  explain:'The roof maps how technical requirements help or hinder each other. Horsepower vs. fuel efficiency is a classic negative correlation that forces an early, deliberate compromise.'},
+ {id:'q3',type:'num',unit:'%',pct:true,answer:27.586,tol:0.2,
+  prompt:'Anker’s four customer needs carry importance weights of 9 (Long-Lasting Power), 8 (Fast Recharging), 7 (Portability / Weight) and 5 (Quiet Operation).\n\nWhat is Fast Recharging’s share of total customer importance? (percent, one decimal)',
+  explain:'8 ÷ (9 + 8 + 7 + 5) = 8 ÷ 29 = 27.6 %. Lucidchart’s method works the same way: rating ÷ total of all ratings.'},
+ {id:'q4',type:'mcq',prompt:'Which of these is a well-formed technical requirement (a “How”)?',
+  options:['“Make the door close easily”','Door closing force (N) — minimise','“Customers should feel it is premium”','“Good build quality”'],correct:1,
+  explain:'A How must be quantitative and objective: a metric, a unit and a direction. “Door closing force in newtons, minimise” can be measured, targeted and tested; the others are still customer-speak.'},
+ {id:'q5',type:'mcq',prompt:'In the Anker matrix, which technical requirement has a STRONG (9) relationship with BOTH Long-Lasting Power and Portability / Weight?',
+  options:['Input Charging Rate','Total Unit Weight','Battery Capacity','Inverter Efficiency'],correct:2,
+  explain:'Battery Capacity scores 9 on both. Total Unit Weight is 9 only for Portability (1 for power); Inverter Efficiency is 9 only for power (1 for portability). That double-9 is why battery capacity is also where the biggest conflict lives.'},
+ {id:'q6',type:'mcq',prompt:'In the roof, Battery Capacity vs. Total Unit Weight is strongly NEGATIVE (−9). What is the most useful response from the design team?',
+  options:['Treat it as a major trade-off and look for a technical way to break it, e.g. higher energy-density cells','Drop Portability from the customer needs, since it conflicts with capacity','Ignore it — the roof does not change the priority scores','Read it as synergy: raising capacity will also lower weight'],correct:0,
+  explain:'Lucidchart is right that the roof does not alter the importance scores — but its whole value is the insight it adds. Anker used the −9 to focus R&D on high energy-density chemistry (e.g. LiFePO4). Dropping a need or ignoring the conflict defeats the purpose.'},
+ {id:'q7',type:'text',min:60,
+  prompt:'Beyond better battery chemistry, propose ONE design or business-level move that eases the Battery Capacity vs. Weight conflict (think modular packs, wheeled/accessory options, tiered models …).\n\nWhich customer need do you protect, which do you compromise — and why?',
+  guide:['Names a concrete lever (not just “innovate”).','Says explicitly which need is protected and which is compromised.','Links the choice to a customer segment (outdoor use vs. home backup).','Notes that the House would be re-scored after the change.']},
+ {id:'q8',type:'num',unit:'%',pct:true,answer:33.407,tol:0.3,
+  prompt:'Using the weights 9 / 8 / 7 / 5 and the relationship scores in the Anker matrix, compute the technical priority TP = Σ W × R for all five Hows.\n\nWhat share of the TOTAL technical priority does Battery Capacity represent? (percent, one decimal)\n\n(If you edited the house, press “Reset to case values” first.)',
+  explain:'TP: Battery 152, Charging 93, Weight 72, Noise 45, Inverter 93 → total 455. Battery share = 152 ÷ 455 = 33.4 %. Lucid’s percent-weighted version gives different raw numbers (e.g. 152 ÷ 29 = 5.24) but identical shares and the same ranking.'},
+ {id:'q9',type:'mcq',prompt:'Which statement about the resulting ranking is correct?',
+  options:['Battery Capacity (152) leads; Input Charging Rate and Inverter Efficiency TIE at 93','Battery Capacity (152) leads, Input Charging Rate (93) is clearly second, Inverter Efficiency (72) third','Inverter Efficiency ranks first because Long-Lasting Power is the heaviest need','Total Unit Weight ranks second because Portability has a 9'],correct:0,
+  explain:'Charging = 9×1 + 8×9 + 7×1 + 5×1 = 93 and Inverter = 9×9 + 8×0 + 7×1 + 5×1 = 93. The source article says Battery Capacity and Charging Rate score highest, but its own matrix puts Inverter Efficiency level with Charging. Always recompute — and when scores tie, use the roof, cost and competitor gaps to break the tie.'},
+ {id:'q10',type:'mcq',prompt:'Illustrative data (1 = poor, 5 = excellent). Importance 9 / 8 / 7 / 5. Our product: 3 / 2 / 4 / 4. Best competitor: 4 / 4 / 3 / 3 (for Long-Lasting Power / Fast Recharging / Portability / Quiet).\n\nWith opportunity = importance × max(0, best competitor − ours), which need is the biggest improvement opportunity?',
+  options:['Long-Lasting Power','Fast Recharging','Portability / Weight','Quiet Operation'],correct:1,
+  explain:'Opportunities: Power 9×1 = 9; Recharging 8×2 = 16; Portability 0 (we lead); Quiet 0 (we lead). Fast Recharging is both important and weak. Needs where we already lead are potential selling points to protect and advertise.'},
+ {id:'q11',type:'mcq',prompt:'In a cascade of houses, what becomes the “Whats” of House 2 (Parts Deployment)?',
+  options:['The original customer needs, again','The prioritised technical requirements (Hows) from House 1','The manufacturing process parameters','The competitor benchmark scores'],correct:1,
+  explain:'The output of one house is the input of the next: House 1 Hows → House 2 Whats, House 2 Hows → House 3 Whats, and so on. That chain gives a line of sight from customer wish to a tolerance on the shop floor.'},
+ {id:'q12',type:'mcq',prompt:'A start-up is entering a new market. Teams disagree about what customers want, there is no written product definition, and marketing and engineering rarely talk. Which tool addresses this best?',
+  options:['A QFD House of Quality','A Gantt chart of the launch plan','A break-even (cost–volume–profit) analysis','A larger inspection team at final assembly'],correct:0,
+  explain:'These are textbook signals for QFD: new market, poor interdepartmental communication about customer needs, no documented product definition. The HoQ builds a shared, written link from voice of customer to technical decisions — quality “engineered in”, not inspected in.'},
+ {id:'q13',type:'text',min:90,
+  prompt:'Your turn. Choose a product or service from your own industry. Write:\n(a) 4 customer needs with 1–9 importance weights,\n(b) 4 measurable technical requirements (unit + direction),\n(c) one pair of Hows you expect to trade off in the roof.',
+  guide:['Needs are in customer language, not solutions.','Each How has a metric, unit and direction (max / min).','At least one strong link per need — no orphan rows or columns.','The trade-off pair is plausible and explained in a phrase.']}
+];
+const QMAP=Object.fromEntries(QS.map(q=>[q.id,q]));
+const QNUM=Object.fromEntries(QS.map((q,i)=>[q.id,i+1]));
+const GRADED=QS.filter(q=>q.type!=='text');
+
+/* ============================== STATIONS ============================== */
+const callout=(t,h,c='')=>`<div class="callout ${c}"><b class="t">${t}</b>${h}</div>`;
+const STATIONS=[
+ {title:'Why QFD? The story behind the house',tool:'none',focus:'all',qs:['q1'],body:()=>`
+   <p class="lead">Every product aims to fill a customer need — yet pinning down what customers <em>actually</em> need, and turning it into engineering decisions, is where projects go wrong. Quality Function Deployment (QFD) is the method; the <b>House of Quality</b> is its first matrix.</p>
+   <div class="tl"><div><b>1966</b>Dr. Yoji Akao conceptualises QFD.</div><div><b>1972</b>First House of Quality at Mitsubishi Heavy Industries, Kobe.</div><div><b>1980s</b>Xerox and Ford bring it to the US; Don Clausing refines it.</div></div>
+   <p>The shift in mindset: quality cannot be <em>inspected in</em> at the end — it must be <em>engineered in</em> from the start.</p>
+   <h3>Where the house sits in QFD</h3>
+   <ol class="phases"><li class="hl"><span><b>Product definition</b> — gather the voice of the customer, translate it into design requirements. <em>The House of Quality lives here.</em></span></li><li><span><b>Product development</b> — turn prioritised specs into part and assembly characteristics.</span></li><li><span><b>Process development</b> — design manufacturing and assembly processes.</span></li><li><span><b>Process quality control</b> — controls, inspections and tests on critical characteristics.</span></li></ol>
+   <h3>What you get out of it</h3>
+   <div class="chips"><span class="chip">Understand customers</span><span class="chip">Predict perceived value</span><span class="chip">Stakeholder buy-in</span><span class="chip">Needs → goals</span><span class="chip">Documented requirements</span><span class="chip">Structure</span><span class="chip">Prioritised resources</span></div>
+   ${callout('Prof’s note','Our running case is an <b>Anker-style mid-range portable power station</b> for outdoor users and home backup: 4 customer needs, 5 technical levers. Small enough to compute by hand, rich enough to show a real trade-off. Watch the house on the right fill in, room by room.','blue')}`},
+ {title:'Anatomy of the house',tool:'rooms',focus:'dynamic',qs:['q2'],body:()=>`
+   <p class="lead">Six rooms, one conversation between the market and the engineers. <b>Click each room in the diagram</b> to read what it holds.</p>
+   <div class="roompanel" id="roomPanel"></div>
+   <p class="src" id="roomCount"></p>
+   ${callout('Build order','Left wall → ceiling → main room → roof → basement → right wall. Each step uses what the previous one produced; that is why we walk through them in this order.')}`},
+ {title:'The left wall: voice of the customer',tool:'weights',focus:'whats',qs:['q3'],body:()=>`
+   <p>Start with <b>what customers want, in their words</b> — not how you will deliver it. “Fast recharging”, not “100 W USB-C port”. Lucidchart’s smartphone example lists: size, weight, easy to use, reliable, cheap, big screen, long-lasting battery, high-quality camera.</p>
+   <p>Next to each need, rate its <b>importance</b>. Lucidchart uses 1–5; Think Insights uses 1–9. Ties are fine, and ratings need not be whole numbers. Then express each as a <b>percent of the total</b>:</p>
+   <div class="formula">importance % = rating ÷ Σ ratings</div>
+   ${callout('Try it','Drag the sliders on the right. Notice that only the <em>relative</em> weights matter: doubling every rating leaves every percentage unchanged.')}
+   <p class="src">Needs come from surveys, focus groups and interviews — the quality of the whole house depends on the quality of this wall.</p>`},
+ {title:'The ceiling: measurable “Hows”',tool:'dir',focus:'hows',qs:['q4'],body:()=>`
+   <p>Across the top go the <b>technical requirements</b> — the design team’s measurable answers. If a requirement cannot be given a metric, a unit and a target, refine it.</p>
+   <div class="chips"><span class="chip">“close easily” → <b>Door closing force [N]</b></span><span class="chip">“not noisy” → <b>Sound on closing [dB]</b></span></div>
+   <p>Each How also needs a <b>direction of improvement</b>: higher (▲), lower (▼) or a nominal value. A phone should get <em>lighter</em> (▼) and its battery should <em>last longer</em> (▲). These arrows feed the roof later.</p>
+   ${callout('Try it','Click any ▲/▼ cell above a column in the diagram to flip its direction. Which of Anker’s five Hows would you <em>not</em> want to flip?')}
+   <p class="src">Anker’s targets from the case: 2000+ Wh capacity and 1000+ W charging.</p>`},
+ {title:'The main room: relationship matrix',tool:'matrix',focus:'whats hows matrix',qs:['q5'],body:()=>`
+   <p>Now ask, cell by cell: <b>how strongly does this How move that What?</b> Score <b>9</b> strong, <b>3</b> moderate, <b>1</b> weak, blank for none. Empty cells matter: they stop wasted design effort.</p>
+   <p>Lucidchart’s phone: customers want it <em>cheap</em> — cost of production affects that strongly; operating system, battery and glass affect it less. In the Anker case, long-lasting power depends strongly on battery capacity <em>and</em> on inverter efficiency.</p>
+   ${callout('Prof’s check','Scan for an <b>empty row</b> (a need no How addresses → you cannot deliver it) and an <b>empty column</b> (a How nobody asked for → possible over-engineering).')}
+   ${callout('Try it','Click matrix cells to cycle 0 → 1 → 3 → 9. Hover or tap to read the sentence behind a cell.','blue')}`},
+ {title:'The roof: help or hurt?',tool:'roof',focus:'hows roof',qs:['q6','q7'],body:()=>`
+   <p>The roof is where the House of Quality becomes <b>systems engineering</b>. For each pair of Hows, mark whether improving one helps (+) or hurts (−) the other. Two ▲ columns that move together are positively correlated; a ▲ and a ▼ pulling against each other are negatively correlated.</p>
+   <p>In the Anker case, the loud signal is <b>Battery Capacity ↔ Total Unit Weight = −9</b>: bigger batteries are heavier. Capacity ↔ Charging Rate is mildly positive (+3). Charging Rate ↔ Fan Noise is −9 — plausibly because faster charging produces more heat to cool.</p>
+   ${callout('Reading the roof','Per Lucidchart, the roof and the competitor research do not change the priority scores — they give <em>insight</em>. A −9 is a flag for R&amp;D, not a number in a sum.')}
+   ${callout('Try it','Click roof diamonds to cycle: 0 → + → ++ → − → −−.','blue')}`},
+ {title:'The basement: what to prioritise',tool:'basement',focus:'whats hows matrix basement',qs:['q8','q9'],body:()=>`
+   <p>Now we collapse the matrix into a ranking. For each How <i>j</i>:</p>
+   <div class="formula">TP<sub>j</sub> = Σ<sub>i</sub> W<sub>i</sub> × R<sub>ij</sub></div>
+   <p>Worked example — <b>Fan Noise Level</b>: 9×0 + 8×0 + 7×0 + 5×9 = <b>45</b>.</p>
+   <p>Lucidchart multiplies the <i>percent</i> importance instead of the raw rating (e.g. 4 % × 9 = 0.36). Toggle between the two on the right: raw numbers change, <b>shares and ranking do not</b>.</p>
+   ${callout('Prof’s caution','TP says where customer value is concentrated — not what is cheap, feasible, or conflict-free. A high-TP How with a −9 in the roof still needs a strategy. Use TP to focus the debate, not to end it.')}
+   ${callout('Try it','Set Fast Recharging’s weight to 2. Which How falls most? Which rank order survives?','blue')}`},
+ {title:'The right wall: competitive reading',tool:'comp',focus:'whats right',qs:['q10'],body:()=>`
+   <p>The competitive assessment shows how you and your rivals are perceived on each customer need — so you can see what has been overlooked and where an advantage is available. A matching <b>technical benchmark</b> compares measured values (Wh, dB, hours of battery life) against targets.</p>
+   <p>Neither changes the importance ratings, but both tell you where to invest. A simple lens: <b>opportunity = importance × max(0, best rival − ours)</b>.</p>
+   ${callout('Heads-up','The ratings in this station are <b>illustrative teaching data</b> — they are not from the source articles.')}
+   ${callout('Try it','Move our ratings with the sliders and watch the opportunity table re-rank the needs.','blue')}`},
+ {title:'Cascading houses',tool:'cascade',focus:'all',qs:['q11'],body:()=>`
+   <p>The first house is rarely the last. Its <b>output — the prioritised Hows — becomes the input (the Whats) of the next house</b>, so the customer’s voice travels all the way to the shop floor.</p>
+   <p>The punchline from Think Insights: a direct line from “I want an easy-to-use car” to “the diameter must be 5.00 ± 0.01 mm”.</p>
+   <p class="src">Click each house on the right to see its Whats, Hows and an example.</p>`},
+ {title:'Putting it to work',tool:'none',focus:'all',qs:['q12','q13'],body:()=>`
+   <p>QFD takes effort. It pays off when one or more of these is true (Lucidchart):</p>
+   <div class="chips"><span class="chip">Customer satisfaction is a main goal</span><span class="chip">Development delays</span><span class="chip">Poor interdepartmental communication on needs</span><span class="chip">No clear product/process guidelines</span><span class="chip">No documented product definition</span><span class="chip">Entering a new market</span><span class="chip">Product under-performing</span><span class="chip">Commodity pressure</span><span class="chip">Several customers with different needs</span></div>
+   ${callout('Prof’s cautions','Scores are judgement calls — document who scored and why. A big matrix (needs × Hows) grows fast; keep it to the vital few. And remember false precision: 152 vs 150 is not a meaningful gap.')}
+   ${callout('Capstone','Checkpoint 13 asks you to sketch a mini-House for a product from your own industry. It is the part of your record I will read most closely.','blue')}`}
+];
+
+/* ============================== STATE ============================== */
+const STORE='hoq-mba-tour-v1';
+function newState(){return{last:0,profile:null,started:null,done:null,step:-1,ans:{},shown:{},draft:{},model:freshModel(),visited:{},room:null,cas:0}}
+function loadState(){try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&s.model&&s.ans){return Object.assign(newState(),s)}}catch(e){}return null}
+function saveState(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+let state=loadState()||newState();
+let eraseArmed=false;
+
+/* ============================== HELPERS ============================== */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nl=s=>esc(s).replace(/\n/g,'<br>');
+const p2=n=>String(n).padStart(2,'0');
+let TZ='local time';try{TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local time'}catch(e){}
+function fmtTS(ts){const d=new Date(ts);return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`}
+function stampFile(ts){const d=new Date(ts);return `${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}`}
+function dur(ms){ms=Math.max(0,Math.round(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return h?`${h}h ${p2(m)}m ${p2(s)}s`:`${m}m ${p2(s)}s`}
+const stationDone=k=>STATIONS[k].qs.every(id=>state.ans[id]);
+const allDone=()=>QS.every(q=>state.ans[q.id]);
+function unlocked(k){if(k>=STATIONS.length)return allDone();for(let i=0;i<k;i++)if(!stationDone(i))return false;return true}
+const answeredCount=()=>QS.filter(q=>state.ans[q.id]).length;
+const score=()=>GRADED.filter(q=>state.ans[q.id]&&state.ans[q.id].correct).length;
+function wrapTxt(t,n){const w=t.split(' ');const L=[];let c='';for(const x of w){if((c+' '+x).trim().length>n&&c){L.push(c);c=x}else c=(c+' '+x).trim()}if(c)L.push(c);return L}
+
+/* ============================== HOUSE SVG ============================== */
+function sym(v,cx,cy){
+  if(v===9)return `<circle cx="${cx}" cy="${cy}" r="13" class="sym9o"/><circle cx="${cx}" cy="${cy}" r="6" class="sym9i"/>`;
+  if(v===3)return `<circle cx="${cx}" cy="${cy}" r="10" class="sym3"/>`;
+  if(v===1)return `<polygon points="${cx},${cy-10} ${cx+10},${cy+8} ${cx-10},${cy+8}" class="sym1"/>`;
+  return '';
+}
+const ROOFLAB={'9':'strong positive (++)','3':'positive (+)','0':'no interaction','-3':'negative (−)','-9':'strong negative (−−)'};
+function houseSVG(m,k){
+  const tool=STATIONS[k].tool;
+  const colW=84,rowH=46,X0=12,labelW=188,wCol=48,mx=X0+labelW+wCol,roofBase=146,hh=26,hw=colW/2;
+  const howsH=72,dirH=24,dirTop=roofBase+howsH,matTop=dirTop+dirH,basTop=matTop+rowH*4;
+  const rx=mx+colW*5,rW=176,W=rx+rW+8,H=basTop+96+8;
+  const xc=j=>mx+(j+.5)*colW;
+  const tps=tp(m),tot=tps.reduce((a,b)=>a+b,0)||1,maxTp=Math.max(...tps,1),sumW=m.w.reduce((a,b)=>a+b,0)||1;
+  const editR=(tool==='matrix'||tool==='basement'),editRoof=tool==='roof',editDir=tool==='dir';
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="House of Quality diagram for a portable power station">`;
+  /* ROOF */
+  s+=`<g class="room room-roof ${state.room==='roof'?'sel':''}" data-room="roof">`;
+  s+=`<text class="cap" x="${X0+4}" y="24">THE ROOF</text><text class="sub" x="${X0+4}" y="40">How do the Hows help</text><text class="sub" x="${X0+4}" y="54">or hurt each other?</text>`;
+  for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){
+    const cx=(xc(i)+xc(j))/2,cy=roofBase-(j-i)*hh,v=m.roof[i+'-'+j]||0;
+    const cls=v>0?'p':v<0?'n':'';
+    s+=`<polygon class="rf ${cls} ${editRoof?'ed':''}" ${editRoof?`data-roofcell="${i}-${j}" tabindex="0" role="button"`:''} points="${cx},${cy-hh} ${cx+hw},${cy} ${cx},${cy+hh} ${cx-hw},${cy}"><title>${HOWS[i].name} × ${HOWS[j].name}: ${ROOFLAB[String(v)]}</title></polygon>`;
+    if(v)s+=`<text class="rft ${cls}" x="${cx}" y="${cy+5}">${v===9?'++':v===3?'+':v===-3?'−':'−−'}</text>`;
+  }
+  s+=`</g>`;
+  /* HOWS */
+  s+=`<g class="room room-hows ${state.room==='hows'?'sel':''}" data-room="hows">`;
+  for(let j=0;j<5;j++){
+    s+=`<rect class="cell band" x="${mx+j*colW}" y="${roofBase}" width="${colW}" height="${howsH}"/>`;
+    const L=wrap2(HOWS[j].name);
+    L.forEach((ln,ix)=>{s+=`<text class="hl" x="${xc(j)}" y="${roofBase+howsH-10-(L.length-1-ix)*14}">${esc(ln)}</text>`});
+    const up=m.dir[j]==='up';
+    s+=`<rect class="cell ${editDir?'ed':''}" ${editDir?`data-dircell="${j}" tabindex="0" role="button"`:''} x="${mx+j*colW}" y="${dirTop}" width="${colW}" height="${dirH}"/>`;
+    s+=`<text class="dirt" style="pointer-events:none" x="${xc(j)}" y="${dirTop+16}">${up?'▲ max':'▼ min'} · ${HOWS[j].unit}</text>`;
+  }
+  s+=`</g>`;
+  /* WHATS */
+  s+=`<g class="room room-whats ${state.room==='whats'?'sel':''}" data-room="whats">`;
+  s+=`<rect class="cell band" x="${X0}" y="${roofBase}" width="${labelW+wCol}" height="${howsH+dirH}"/>`;
+  s+=`<text class="cap" x="${X0+8}" y="${roofBase+34}">CUSTOMER NEEDS</text><text class="sub" x="${X0+8}" y="${roofBase+50}">(the Whats)</text>`;
+  s+=`<text class="sub" style="text-anchor:middle" x="${X0+labelW+wCol/2}" y="${dirTop+16}">weight</text>`;
+  for(let i=0;i<4;i++){
+    const y=matTop+i*rowH;
+    s+=`<rect class="cell" x="${X0}" y="${y}" width="${labelW}" height="${rowH}"/><text class="lbl" x="${X0+10}" y="${y+rowH/2+4}">${esc(NEEDS[i].name)}</text>`;
+    s+=`<rect class="cell" x="${X0+labelW}" y="${y}" width="${wCol}" height="${rowH}"/><text class="wv" x="${X0+labelW+wCol/2}" y="${y+22}">${m.w[i]}</text><text class="wp" x="${X0+labelW+wCol/2}" y="${y+36}">${(m.w[i]/sumW*100).toFixed(1)}%</text>`;
+  }
+  s+=`</g>`;
+  /* MATRIX */
+  s+=`<g class="room room-matrix ${state.room==='matrix'?'sel':''}" data-room="matrix">`;
+  for(let i=0;i<4;i++)for(let j=0;j<5;j++){
+    const x=mx+j*colW,y=matTop+i*rowH,v=m.R[i][j];
+    s+=`<rect class="cell ${editR?'ed':''}" ${editR?`data-cell="${i}-${j}" tabindex="0" role="button"`:''} x="${x}" y="${y}" width="${colW}" height="${rowH}"><title>${esc(HOWS[j].name)} → ${esc(NEEDS[i].name)}: ${v||'none'}</title></rect>`;
+    s+=sym(v,x+colW/2,y+rowH/2);
+    if(v)s+=`<text class="num" x="${x+colW-5}" y="${y+11}" text-anchor="end">${v}</text>`;
+  }
+  s+=`</g>`;
+  /* BASEMENT */
+  s+=`<g class="room room-basement ${state.room==='basement'?'sel':''}" data-room="basement">`;
+  const rows=[['Technical priority',36],['Share of total',30],['Target',30]];
+  let by=basTop;
+  rows.forEach((r,ri)=>{
+    s+=`<rect class="cell band" x="${X0}" y="${by}" width="${labelW+wCol}" height="${r[1]}"/><text class="lbl" x="${X0+10}" y="${by+r[1]/2+4}">${r[0]}</text>`;
+    for(let j=0;j<5;j++){
+      const x=mx+j*colW;
+      s+=`<rect class="cell" x="${x}" y="${by}" width="${colW}" height="${r[1]}"/>`;
+      if(ri===0){
+        s+=`<rect class="bar" x="${x+1}" y="${by+1}" width="${(colW-2)*tps[j]/maxTp}" height="${r[1]-2}"/>`;
+        const val=m.norm?(tps[j]/sumW).toFixed(2):tps[j];
+        const rank=1+tps.filter(t=>t>tps[j]).length;
+        s+=`<text class="tpv" x="${x+colW/2}" y="${by+23}">${val}</text><text class="rk" x="${x+5}" y="${by+11}">#${rank}</text>`;
+      }else if(ri===1){
+        s+=`<text class="tpv" style="font-size:12px;font-weight:500" x="${x+colW/2}" y="${by+20}">${(tps[j]/tot*100).toFixed(1)}%</text>`;
+      }else{
+        const t=HOWS[j].target;
+        s+=`<text class="dirt" x="${x+colW/2}" y="${by+19}" style="${t?'':'fill:var(--muted)'}">${t||'—'}</text>`;
+      }
+    }
+    by+=r[1];
+  });
+  s+=`</g>`;
+  /* RIGHT WALL */
+  s+=`<g class="room room-right ${state.room==='right'?'sel':''}" data-room="right">`;
+  s+=`<rect class="cell band" x="${rx}" y="${roofBase}" width="${rW}" height="${howsH+dirH}"/>`;
+  s+=`<text class="cap" x="${rx+8}" y="${roofBase+24}">CUSTOMER PERCEPTION</text><text class="sub" x="${rx+8}" y="${roofBase+39}">1 = poor … 5 = excellent</text>`;
+  s+=`<circle class="dotU" cx="${rx+14}" cy="${roofBase+60}" r="5"/><text class="sub" x="${rx+23}" y="${roofBase+64}">Us</text>`;
+  s+=`<circle class="dotA" cx="${rx+58}" cy="${roofBase+60}" r="5"/><text class="sub" x="${rx+67}" y="${roofBase+64}">Rival A</text>`;
+  s+=`<circle class="dotB" cx="${rx+116}" cy="${roofBase+60}" r="5"/><text class="sub" x="${rx+125}" y="${roofBase+64}">Rival B</text>`;
+  s+=`<text class="sub" x="${rx+8}" y="${roofBase+84}" style="font-size:9.5px">illustrative data</text>`;
+  const ax0=rx+18,ax1=rx+rW-18;
+  for(let i=0;i<4;i++){
+    const y=matTop+i*rowH;
+    s+=`<rect class="cell" x="${rx}" y="${y}" width="${rW}" height="${rowH}"/>`;
+    for(let t=0;t<5;t++){const x=ax0+t*(ax1-ax0)/4;s+=`<line class="tick" x1="${x}" x2="${x}" y1="${y+6}" y2="${y+rowH-6}"/>`}
+    const px=v=>ax0+(v-1)*(ax1-ax0)/4;
+    s+=`<circle class="dotA" cx="${px(COMP.a[i])}" cy="${y+13}" r="4.5"/><circle class="dotB" cx="${px(COMP.b[i])}" cy="${y+23}" r="4.5"/><circle class="dotU" cx="${px(m.us[i])}" cy="${y+33}" r="5"/>`;
+  }
+  s+=`<rect class="cell band" x="${rx}" y="${basTop}" width="${rW}" height="96"/><text class="cap" x="${rx+8}" y="${basTop+28}">TECHNICAL BENCHMARKING</text><text class="sub" x="${rx+8}" y="${basTop+46}">Lab-measured values vs.</text><text class="sub" x="${rx+8}" y="${basTop+60}">competitors (Wh, W, kg, dB, %)</text>`;
+  s+=`</g></svg>`;
+  return s;
+}
+function wrap2(t){return wrapTxt(t,14)}
+
+/* ============================== QUESTION CARDS ============================== */
+function qHTML(q){
+  const a=state.ans[q.id],n=QNUM[q.id],d=state.draft[q.id];
+  const kind=q.type==='mcq'?'multiple choice':q.type==='num'?'calculation':'reflection';
+  let h=`<article class="qcard ${a?'locked':''}" id="card-${q.id}"><div class="qhead"><span class="qtag">Checkpoint ${n} of ${QS.length}</span><span class="qkind">${kind}</span></div><p class="qprompt">${nl(q.prompt)}</p>`;
+  if(q.type==='mcq'){
+    h+='<div class="opts" role="radiogroup">';
+    q.options.forEach((o,i)=>{
+      const chosen=a?a.resp===i:d===i;let cls='opt';
+      if(a){if(i===q.correct)cls+=' right';else if(chosen)cls+=' wrong'}else if(chosen)cls+=' chosen';
+      h+=`<button type="button" class="${cls}" data-opt="${q.id}:${i}" ${a?'disabled':''} role="radio" aria-checked="${chosen}"><span class="ol">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`;
+    });
+    h+='</div>';
+  }else if(q.type==='num'){
+    h+=`<div class="numrow"><input type="text" inputmode="decimal" id="in-${q.id}" data-draft="${q.id}" placeholder="Your answer" value="${esc(a?a.respText:(d||''))}" ${a?'disabled':''}><span>${esc(q.unit||'')}</span></div>`;
+  }else{
+    const val=a?a.respText:(d||'');
+    h+=`<textarea id="in-${q.id}" data-draft="${q.id}" data-min="${q.min}" placeholder="Write your response here…" ${a?'disabled':''}>${esc(val)}</textarea><div class="count" id="cnt-${q.id}">${val.trim().length} / ${q.min} characters minimum</div>`;
+  }
+  if(!a){
+    h+=`<div class="qfoot"><button class="btn primary" data-act="submit" data-q="${q.id}">Submit &amp; record answer</button><span class="src">One attempt · your answer and its timestamp are recorded</span><span class="warn" id="warn-${q.id}"></span></div>`;
+  }else{
+    if(q.type==='text'){
+      h+=`<div class="fb note"><strong>Recorded.</strong> This reflection is not auto-graded. What a strong answer includes:<ul>${q.guide.map(g=>`<li>${esc(g)}</li>`).join('')}</ul></div>`;
+    }else{
+      const ans=q.type==='mcq'?`<br><span class="src">Correct answer: <b>${esc(q.options[q.correct])}</b></span>`:(a.correct?'':`<br><span class="src">Correct answer: <b>${q.answer.toFixed(1)}${esc(q.unit||'')}</b></span>`);
+      h+=`<div class="fb ${a.correct?'ok':'bad'}"><strong>${a.correct?'Correct.':'Not quite.'}</strong> ${ans}<br>${esc(q.explain)}</div>`;
+    }
+    h+=`<div class="stamp">Recorded ${fmtTS(a.at)} (${esc(TZ)}) · ${dur(a.at-(a.shown||a.at))} on this checkpoint</div>`;
+  }
+  return h+'</article>';
+}
+function refreshCard(id){const el=$('#card-'+id);if(!el)return;const t=document.createElement('div');t.innerHTML=qHTML(QMAP[id]);el.replaceWith(t.firstElementChild)}
+function submitQ(id){
+  const q=QMAP[id];if(state.ans[id])return;
+  const warn=m=>{const w=$('#warn-'+id);if(w)w.textContent=m};
+  let rec={at:Date.now(),shown:state.shown[id]||Date.now()};
+  if(q.type==='mcq'){
+    const d=state.draft[id];if(typeof d!=='number'){warn('Pick an option first.');return}
+    rec.resp=d;rec.respText=q.options[d];rec.correct=d===q.correct;
+  }else if(q.type==='num'){
+    const raw=($('#in-'+id).value||'').trim();
+    let v=parseFloat(raw.replace(',','.').replace('%',''));
+    if(isNaN(v)){warn('Enter a number.');return}
+    if(q.pct&&v>0&&v<=1)v*=100;
+    rec.resp=v;rec.respText=raw+(q.unit&&raw.indexOf(q.unit)<0?' '+q.unit:'');rec.correct=Math.abs(v-q.answer)<=q.tol;
+  }else{
+    const t=($('#in-'+id).value||'').trim();
+    if(t.length<q.min){warn(`Please write at least ${q.min} characters (${t.length} so far).`);return}
+    rec.resp=t;rec.respText=t;rec.correct=null;
+  }
+  state.ans[id]=rec;saveState();
+  const y=window.scrollY;refreshCard(id);updateChrome();updateNav();window.scrollTo(0,y);
+}
+
+/* ============================== TOOLS ============================== */
+function weightRows(){
+  const m=state.model,sumW=m.w.reduce((a,b)=>a+b,0)||1;
+  return NEEDS.map((n,i)=>`<div class="wrow"><label for="w${i}">${esc(n.name)}</label><input id="w${i}" type="range" min="1" max="9" step="1" value="${m.w[i]}" data-w="${i}"><span class="v" id="wv${i}">${m.w[i]}</span><span class="p" id="wp${i}">${(m.w[i]/sumW*100).toFixed(1)}%</span></div>`).join('');
+}
+function toolHTML(k){
+  const t=STATIONS[k].tool,reset=`<button class="btn sm" data-act="reset-model">Reset to case values</button>`;
+  if(t==='weights')return `<div class="tool"><h4>Customer importance</h4>${weightRows()}<div class="row" style="margin-top:8px">${reset}</div></div>`;
+  if(t==='dir')return `<div class="tool"><h4>Direction of improvement</h4><div class="readout" id="readout">Click a ▲ / ▼ cell above any column in the diagram to flip it.</div><div class="row" style="margin-top:8px">${reset}</div></div>`;
+  if(t==='matrix')return `<div class="tool"><h4>Relationship strengths</h4><div class="legend"><span><svg viewBox="-14 -14 28 28"><circle r="12" class="sym9o"/><circle r="5.5" class="sym9i"/></svg>9 strong</span><span><svg viewBox="-14 -14 28 28"><circle r="10" class="sym3"/></svg>3 moderate</span><span><svg viewBox="-14 -14 28 28"><polygon points="0,-10 10,8 -10,8" class="sym1"/></svg>1 weak</span><span>blank = none</span></div><div class="readout" id="readout">Hover or tap a cell to read it. Click to change its strength.</div><div class="row" style="margin-top:8px">${reset}</div></div>`;
+  if(t==='roof')return `<div class="tool"><h4>Correlations between Hows</h4><div class="legend"><span style="color:var(--good)"><b>++</b> strong positive</span><span style="color:var(--good)"><b>+</b> positive</span><span style="color:var(--bad)"><b>−</b> negative</span><span style="color:var(--bad)"><b>−−</b> strong negative</span></div><div class="readout" id="readout">Hover or tap a diamond to read it. Click to cycle its value.</div><div class="row" style="margin-top:8px">${reset}</div></div>`;
+  if(t==='basement')return `<div class="tool"><h4>Technical priority — live</h4>${weightRows()}<div class="row" style="margin:8px 0"><button class="btn sm" data-act="norm">${state.model.norm?'Showing: percent-weighted (Lucid)':'Showing: raw weights (Think Insights)'}</button>${reset}</div><div class="bars" id="bars"></div></div>`;
+  if(t==='comp')return `<div class="tool"><h4>Our perception ratings (1–5)</h4>${NEEDS.map((n,i)=>`<div class="wrow"><label for="u${i}">${esc(n.name)}</label><input id="u${i}" type="range" min="1" max="5" step="1" value="${state.model.us[i]}" data-us="${i}"><span class="v" id="uv${i}">${state.model.us[i]}</span><span></span></div>`).join('')}<div id="opp"></div><div class="row" style="margin-top:8px">${reset}</div></div>`;
+  if(t==='cascade')return `<div class="tool"><h4>Cascade of houses</h4><div class="cas">${CAS.map((c,i)=>`<button data-cas="${i}" class="${state.cas===i?'on':''}">House ${i+1}</button>`).join('')}</div><div class="roompanel" id="casDetail"></div></div>`;
+  if(t==='rooms')return `<div class="tool"><h4>Explore</h4><p class="src" style="margin:0">Click any room in the diagram. Click again elsewhere to switch.</p></div>`;
+  return '';
+}
+function updateTool(){
+  const k=state.step,t=STATIONS[k].tool,m=state.model,sumW=m.w.reduce((a,b)=>a+b,0)||1;
+  if(t==='weights'||t==='basement')NEEDS.forEach((_,i)=>{const v=$('#wv'+i),p=$('#wp'+i),r=$('#w'+i);if(v)v.textContent=m.w[i];if(p)p.textContent=(m.w[i]/sumW*100).toFixed(1)+'%';if(r)r.value=m.w[i]});
+  if(t==='basement'){
+    const tps=tp(m),tot=tps.reduce((a,b)=>a+b,0)||1,max=Math.max(...tps,1);
+    const ord=tps.map((v,j)=>j).sort((a,b)=>tps[b]-tps[a]);
+    $('#bars').innerHTML=ord.map(j=>`<div class="brow"><span>${esc(HOWS[j].name)}</span><span class="track"><i style="width:${tps[j]/max*100}%"></i></span><span class="val">${m.norm?(tps[j]/sumW).toFixed(2):tps[j]} · ${(tps[j]/tot*100).toFixed(1)}%</span></div>`).join('');
+    const nb=$('[data-act="norm"]');if(nb)nb.textContent=m.norm?'Showing: percent-weighted (Lucid)':'Showing: raw weights (Think Insights)';
+  }
+  if(t==='comp'){
+    const rows=NEEDS.map((n,i)=>{const best=Math.max(COMP.a[i],COMP.b[i]),gap=best-m.us[i],opp=m.w[i]*Math.max(0,gap);return{n:n.name,w:m.w[i],us:m.us[i],best,gap,opp}});
+    const mx=Math.max(...rows.map(r=>r.opp));
+    $('#opp').innerHTML=`<table class="t"><tr><th>Need</th><th>Imp.</th><th>Us</th><th>Best rival</th><th>Opportunity</th></tr>${rows.map(r=>`<tr class="${r.opp===mx&&mx>0?'top':''}"><td>${esc(r.n)}</td><td>${r.w}</td><td>${r.us}</td><td>${r.best}</td><td>${r.opp}${r.gap<0?' <span class="src">(we lead)</span>':''}</td></tr>`).join('')}</table>`;
+    NEEDS.forEach((_,i)=>{const v=$('#uv'+i);if(v)v.textContent=m.us[i]});
+  }
+  if(t==='cascade'){
+    const c=CAS[state.cas];$('#casDetail').innerHTML=`<b>${esc(c.t)}</b><br><span class="src">Whats:</span> ${esc(c.w)}<br><span class="src">Hows:</span> ${esc(c.h)}<br><em>${esc(c.ex)}</em>`;
+    $$('[data-cas]').forEach(b=>b.classList.toggle('on',+b.dataset.cas===state.cas));
+  }
+  if(t==='rooms')updateRoomPanel();
+}
+function updateRoomPanel(){
+  const p=$('#roomPanel');if(!p)return;
+  const r=ROOMS[state.room];
+  p.innerHTML=r?`<b>${esc(r.t)}</b><br>${esc(r.d)}`:'<span class="src">← Click a room in the diagram to begin.</span>';
+  const c=$('#roomCount');if(c)c.textContent=`Rooms explored: ${Object.keys(state.visited).length} of 6`;
+}
+function refreshHouse(){
+  const k=state.step,mount=$('#houseMount');if(!mount)return;
+  mount.dataset.focus=k===1?(state.room||'all'):STATIONS[k].focus;
+  mount.innerHTML=houseSVG(state.model,k);
+}
+
+/* ============================== VIEWS ============================== */
+function welcomeHTML(){
+  const has=state.profile&&(state.started);
+  return `<div class="hero"><section class="card">
+    <p class="kicker">MBA · Operations Management</p>
+    <h1>Build the <em>House of Quality</em>, room by room.</h1>
+    <p class="lead">A guided tour of Quality Function Deployment: how the voice of the customer becomes engineering priorities. Ten short stations, thirteen checkpoints, and a time-stamped PDF record of everything you answered.</p>
+    <ul class="steps3"><li><b>01</b><span>Read each station and play with the live house diagram.</span></li><li><b>02</b><span>Answer the checkpoint(s) before moving on — one attempt each, timestamp recorded.</span></li><li><b>03</b><span>At the end, save your learning record as a PDF.</span></li></ul>
+    <p class="src">Built from Lucidchart’s “How to build a House of Quality (QFD)” and Think Insights’ “House of Quality” (M. A. Sridharan, 2023). Competitive-assessment ratings in Station 8 are illustrative teaching data.</p>
+  </section>
+  <section class="card">
+    ${has?`<h3>Welcome back, ${esc(state.profile.name)}</h3><p>You have answered ${answeredCount()} of ${QS.length} checkpoints.</p>
+      <div class="row"><button class="btn primary" data-act="resume">Resume the tour</button><button class="btn" data-act="restart">Start over</button></div>`
+    :`<h3>Before you begin</h3>
+      <div class="field"><label for="f-name">Your name (appears on the PDF)</label><input type="text" id="f-name" autocomplete="name" placeholder="e.g. Ananya Rao"></div>
+      <div class="field"><label for="f-course">Course / section / roll no. (optional)</label><input type="text" id="f-course" placeholder="e.g. PGDM-B · OM-101"></div>
+      <div class="row"><button class="btn primary" data-act="begin">Begin the tour →</button><span class="warn" id="f-warn"></span></div>
+      <p class="src">Timestamps use your device’s clock (${esc(TZ)}).</p>`}
+  </section></div>`;
+}
+function stationHTML(k){
+  const S=STATIONS[k];
+  S.qs.forEach(id=>{if(!state.shown[id])state.shown[id]=Date.now()});
+  saveState();
+  const focus=k===1?(state.room||'all'):S.focus;
+  const pick=k===1?'pickable':'';
+  return `<div class="stage">
+   <section class="card story"><p class="kicker">Station ${k+1} of ${STATIONS.length}</p><h2>${esc(S.title)}</h2>${S.body()}</section>
+   <aside class="card house-panel"><div class="hp-head"><h3>The house — portable power station</h3><span class="tag">illustrative Anker-style case</span></div>
+     <div class="house-scroll"><div class="house ${pick}" id="houseMount" data-focus="${focus}">${houseSVG(state.model,k)}</div></div>
+     <p class="hint-scroll">Swipe the diagram sideways to see all of it.</p>
+     <div id="toolMount">${toolHTML(k)}</div></aside>
+   <section class="qs">${S.qs.map(id=>qHTML(QMAP[id])).join('')}</section>
+  </div>
+  <div class="nav noprint"><button class="btn" data-act="prev">← ${k===0?'Welcome':'Back'}</button><span class="msg" id="navmsg"></span><button class="btn primary" data-act="next" id="nextbtn"></button></div>`;
+}
+function resultLabel(a){return a.correct===null?'Reflection (not auto-graded)':a.correct?'Correct':'Incorrect'}
+function recordHTML(){
+  if(!state.done)state.done=Date.now(),saveState();
+  const sc=score(),tot=GRADED.length;
+  const stationOf=id=>{for(let i=0;i<STATIONS.length;i++)if(STATIONS[i].qs.includes(id))return i};
+  return `<section class="card" id="report">
+    <p class="kicker">Station complete</p><h2>Your learning record</h2>
+    <div class="kpis"><div class="kpi"><b>${sc}/${tot}</b><span>graded checkpoints correct</span></div><div class="kpi"><b>${answeredCount()}/${QS.length}</b><span>checkpoints answered</span></div><div class="kpi"><b>${dur((state.done||Date.now())-state.started)}</b><span>time on tour</span></div></div>
+    <p><b>${esc(state.profile.name)}</b>${state.profile.course?` · ${esc(state.profile.course)}`:''}<br><span class="src">Started ${fmtTS(state.started)} · Finished ${fmtTS(state.done)} · ${esc(TZ)}</span></p>
+    <div class="row noprint" style="margin:14px 0"><button class="btn primary" data-act="savepdf">⬇ Save PDF record</button><button class="btn" data-act="savejson">⬇ Save submission file (.json)</button><button class="btn" data-act="print">Print / save via browser</button><button class="btn" data-act="prev">← Review stations</button></div>
+    <div class="savemsg noprint" id="saveMsg" role="status" aria-live="polite"></div>
+    <p class="src noprint">Submit whatever your instructor asks for: the PDF is your personal record; the .json submission file lets your instructor see class-wide results.</p>
+    <h3 style="margin-top:20px">Response log</h3>
+    <div class="tablewrap"><table class="log"><tr><th>#</th><th>Station</th><th>Answered at</th><th>Time on Q</th><th>Result</th></tr>
+    ${QS.map(q=>{const a=state.ans[q.id];return `<tr><td>${QNUM[q.id]}</td><td>${esc(STATIONS[stationOf(q.id)].title)}</td><td>${fmtTS(a.at)}</td><td>${dur(a.at-(a.shown||a.at))}</td><td class="${a.correct===null?'res-note':a.correct?'res-ok':'res-bad'}">${resultLabel(a)}</td></tr>`}).join('')}</table></div>
+    <h3 style="margin-top:22px">Your answers</h3>
+    ${QS.map(q=>{const a=state.ans[q.id];return `<div class="rep-item"><h4>Checkpoint ${QNUM[q.id]} · ${fmtTS(a.at)}</h4><div class="q">${nl(q.prompt)}</div><div class="r"><b>Your response:</b> ${esc(a.respText)}</div><div class="${a.correct===null?'res-note':a.correct?'res-ok':'res-bad'}" style="margin-top:4px">${resultLabel(a)}${a.correct===false?` — correct: ${esc(q.type==='mcq'?q.options[q.correct]:q.answer.toFixed(1)+' '+(q.unit||''))}`:''}</div></div>`}).join('')}
+    <p class="src">Timestamps come from the device clock of the student who took the tour.</p>
+  </section>`;
+}
+
+/* ============================== CHROME / NAV ============================== */
+function updateChrome(){
+  $('#who').textContent=state.profile?state.profile.name:'';
+  const pct=state.step<0?0:answeredCount()/QS.length*100;
+  $('#progbar').style.width=pct+'%';
+  const sp=$('#stepper');
+  if(state.step<0){sp.innerHTML='';return}
+  let h='';
+  for(let i=0;i<STATIONS.length;i++){
+    h+=`<button class="pill ${stationDone(i)?'done':''} ${state.step===i?'cur':''}" data-goto="${i}" ${unlocked(i)?'':'disabled'} aria-label="Station ${i+1}: ${esc(STATIONS[i].title)}" title="${esc(STATIONS[i].title)}">${i+1}</button>`;
+  }
+  h+=`<button class="pill ${state.step>=STATIONS.length?'cur':''}" data-goto="${STATIONS.length}" ${allDone()?'':'disabled'} title="Your record">PDF</button>`;
+  sp.innerHTML=h;
+}
+function updateNav(){
+  const b=$('#nextbtn');if(!b)return;const k=state.step,ok=stationDone(k);
+  b.disabled=!ok;b.textContent=k===STATIONS.length-1?'Finish & view my record →':'Next station →';
+  const m=$('#navmsg');if(m)m.textContent=ok?'':'Answer the checkpoint(s) above to continue.';
+}
+function go(k){
+  state.step=k;if(k>=0)state.last=k;eraseArmed=false;saveState();render();window.scrollTo(0,0);
+}
+function render(){
+  const app=$('#app');
+  if(state.step<0)app.innerHTML=welcomeHTML();
+  else if(state.step>=STATIONS.length)app.innerHTML=recordHTML();
+  else{app.innerHTML=stationHTML(state.step);updateTool();updateNav()}
+  updateChrome();
+}
+
+/* ============================== PDF ============================== */
+function pdfSafe(s){
+  return String(s==null?'':s).replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—−]/g,'-').replace(/≥/g,'>=').replace(/≤/g,'<=')
+   .replace(/→/g,'->').replace(/←/g,'<-').replace(/Σ/g,'Sum').replace(/÷/g,'/').replace(/±/g,'+/-').replace(/…/g,'...').replace(/[▲]/g,'^').replace(/[▼]/g,'v').replace(/↔/g,'<->')
+   .replace(/[^\x09\x0A\x20-\x7E\xA0-\xFF]/g,'?');
+}
+function buildPDF(){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'pt',format:'a4'});
+  const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight(),M=44,CW=PW-2*M;
+  const BLUE=[30,75,209],INK=[23,33,47],MUT=[102,112,133],GRN=[21,128,61],RED=[180,40,28];
+  let y=0;const S=pdfSafe;
+  const ensure=h=>{if(y+h>PH-56){doc.addPage();y=M}};
+  function para(str,o){o=o||{};const size=o.size||10,lh=size*1.38,ind=o.indent||0;
+    doc.setFont('helvetica',o.bold?'bold':o.italic?'italic':'normal');doc.setFontSize(size);doc.setTextColor.apply(doc,o.color||INK);
+    const lines=doc.splitTextToSize(S(str),CW-ind);
+    for(const ln of lines){ensure(lh);doc.text(ln,M+ind,y+size);y+=lh}
+    y+=(o.gap==null?4:o.gap)}
+  const generated=Date.now();
+  doc.setFillColor.apply(doc,BLUE);doc.rect(0,0,PW,92,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text('House of Quality - Learning Record',M,46);
+  doc.setFont('helvetica','normal');doc.setFontSize(10.5);doc.text('Guided tour and checkpoint responses  |  MBA Operations Management',M,68);
+  y=114;
+  const kv=(l,v,x,yy)=>{doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor.apply(doc,MUT);doc.text(S(l).toUpperCase(),x,yy);doc.setFont('helvetica','normal');doc.setFontSize(10.5);doc.setTextColor.apply(doc,INK);doc.text(doc.splitTextToSize(S(v),CW/2-12),x,yy+13)};
+  kv('Student',state.profile.name,M,y);kv('Course / section',state.profile.course||'-',M+CW/2,y);y+=40;
+  kv('Tour started',fmtTS(state.started),M,y);kv('Tour finished',fmtTS(state.done||generated),M+CW/2,y);y+=40;
+  kv('Time on tour',dur((state.done||generated)-state.started),M,y);kv('Time zone (device clock)',TZ,M+CW/2,y);y+=40;
+  kv('Graded checkpoints correct',`${score()} of ${GRADED.length}`,M,y);kv('Record generated',fmtTS(generated),M+CW/2,y);y+=46;
+  para('Response log',{size:13,bold:true,color:BLUE,gap:6});
+  const cols=[24,196,104,58,CW-24-196-104-58];const heads=['Q','Station','Answered at','Time on Q','Result'];
+  const rowH=17;ensure(rowH*2);
+  doc.setFillColor(238,242,255);doc.rect(M,y,CW,rowH,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor.apply(doc,MUT);
+  let cx=M;heads.forEach((h,i)=>{doc.text(h.toUpperCase(),cx+4,y+12);cx+=cols[i]});y+=rowH;
+  const stationOf=id=>{for(let i=0;i<STATIONS.length;i++)if(STATIONS[i].qs.includes(id))return i};
+  QS.forEach(q=>{const a=state.ans[q.id];ensure(rowH);
+    doc.setDrawColor(216,208,189);doc.line(M,y+rowH,M+CW,y+rowH);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor.apply(doc,INK);
+    cx=M;const st=S(`${stationOf(q.id)+1}. ${STATIONS[stationOf(q.id)].title}`);let stT=st;while(stT.length>4&&doc.getTextWidth(stT)>cols[1]-10)stT=stT.slice(0,-1);if(stT!==st)stT=stT.trim()+'...';
+    const cells=[String(QNUM[q.id]),stT,fmtTS(a.at),dur(a.at-(a.shown||a.at)),resultLabel(a)];
+    cells.forEach((c,i)=>{if(i===4)doc.setTextColor.apply(doc,a.correct===null?BLUE:a.correct?GRN:RED);else doc.setTextColor.apply(doc,INK);doc.text(S(c),cx+4,y+12);cx+=cols[i]});y+=rowH});
+  y+=16;
+  para('Detailed responses',{size:13,bold:true,color:BLUE,gap:8});
+  QS.forEach(q=>{const a=state.ans[q.id];ensure(80);
+    doc.setFillColor(244,240,230);doc.rect(M,y,CW,20,'F');doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor.apply(doc,BLUE);
+    doc.text(S(`Checkpoint ${QNUM[q.id]}  |  Station ${stationOf(q.id)+1}: ${STATIONS[stationOf(q.id)].title}`),M+6,y+13.5);
+    doc.setFont('helvetica','normal');doc.setTextColor.apply(doc,MUT);doc.setFontSize(8.5);const ts=S(`Answered ${fmtTS(a.at)}`);doc.text(ts,M+CW-6-doc.getTextWidth(ts),y+13.5);y+=26;
+    para(q.prompt,{size:10,bold:true,gap:5});
+    para('Your response: '+a.respText,{size:10,gap:5});
+    if(a.correct===null){
+      para('Reflection - not auto-graded.',{size:9.5,bold:true,color:BLUE,gap:2});
+      para('What a strong answer includes: '+q.guide.join(' | '),{size:9,color:MUT,italic:true,gap:12});
+    }else{
+      para((a.correct?'Result: Correct':'Result: Incorrect')+(a.correct?'':'  -  correct answer: '+(q.type==='mcq'?q.options[q.correct]:q.answer.toFixed(1)+' '+(q.unit||''))),{size:9.5,bold:true,color:a.correct?GRN:RED,gap:2});
+      para(q.explain,{size:9,color:MUT,italic:true,gap:12});
+    }
+  });
+  const n=doc.internal.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor.apply(doc,MUT);
+    doc.text(S(`${state.profile.name}  |  House of Quality learning record  |  generated ${fmtTS(generated)} (${TZ})`),M,PH-26);
+    const pg=`Page ${i} of ${n}`;doc.text(pg,PW-M-doc.getTextWidth(pg),PH-26)}
+  return doc.output('blob');
+}
+async function getDownloads(){try{if(window.claude&&typeof window.claude.use==='function')return await window.claude.use('downloads')}catch(e){}return null}
+async function saveFile(filename,data){
+  const dl=await getDownloads();
+  if(dl){await dl.save({filename,data});return 'saved'}
+  const blob=data instanceof Blob?data:new Blob([data],{type:'application/octet-stream'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);return 'anchor';
+}
+const fileSlug=()=>((state.profile.name||'student').trim().replace(/[^A-Za-z0-9]+/g,'_').slice(0,30)||'student');
+function stationIdx(id){for(let i=0;i<STATIONS.length;i++)if(STATIONS[i].qs.includes(id))return i}
+function exportPayload(){
+  return {schema:'hoq-tour-submission/v1',student:{name:state.profile.name,course:state.profile.course||''},
+    startedAt:new Date(state.started).toISOString(),finishedAt:new Date(state.done||Date.now()).toISOString(),timeZone:TZ,
+    score:{correct:score(),graded:GRADED.length},
+    answers:QS.map(q=>{const a=state.ans[q.id];return{id:q.id,n:QNUM[q.id],station:stationIdx(q.id)+1,type:q.type,prompt:q.prompt,
+      response:a.respText,responseIndex:q.type==='mcq'?a.resp:null,correct:a.correct,
+      answeredAt:new Date(a.at).toISOString(),shownAt:new Date(a.shown||a.at).toISOString(),secondsOnQuestion:Math.round((a.at-(a.shown||a.at))/1000)}})};
+}
+async function savePDF(){
+  const msg=$('#saveMsg');const say=t=>{if(msg)msg.textContent=t};
+  if(!window.jspdf){say('The PDF library could not be loaded (network). Use “Print / save via browser” instead.');return}
+  let blob;try{blob=buildPDF()}catch(e){console.error(e);say('Sorry — building the PDF failed. Use “Print / save via browser” instead.');return}
+  const filename=`HoQ_Record_${fileSlug()}_${stampFile(Date.now())}.pdf`;
+  try{const r=await saveFile(filename,blob);say(r==='saved'?`Saved ${filename}.`:`Download started: ${filename}. If nothing happened, use “Print / save via browser”.`)}
+  catch(e){say(e&&e.code==='declined'?'Save cancelled — press the button again whenever you are ready.':'Could not save the file here. Use “Print / save via browser” instead.')}
+}
+async function saveJSON(){
+  const msg=$('#saveMsg');const say=t=>{if(msg)msg.textContent=t};
+  const filename=`HoQ_Submission_${fileSlug()}_${stampFile(Date.now())}.json`;
+  try{const r=await saveFile(filename,JSON.stringify(exportPayload(),null,2));say(r==='saved'?`Saved ${filename}. Send this file to your instructor.`:`Download started: ${filename}. Send this file to your instructor.`)}
+  catch(e){say(e&&e.code==='declined'?'Save cancelled.':'Could not save the file here.')}
+}
+
+/* ============================== EVENTS ============================== */
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const act=t.closest('[data-act]');
+  if(act){
+    const a=act.dataset.act;
+    if(a==='begin'){
+      const name=($('#f-name').value||'').trim();if(!name){$('#f-warn').textContent='Please enter your name.';return}
+      state=newState();state.profile={name,course:($('#f-course').value||'').trim()};state.started=Date.now();go(0);return}
+    if(a==='resume'){go(Math.min(state.last||0,STATIONS.length))}
+    if(a==='restart'){
+      if(!eraseArmed){eraseArmed=true;act.textContent='Click again to erase everything';return}
+      state=newState();saveState();eraseArmed=false;render();return}
+    if(a==='next'){if(state.step===STATIONS.length-1&&!allDone())return;if(!stationDone(state.step))return;go(state.step+1)}
+    if(a==='prev'){go(state.step-1)}
+    if(a==='submit'){submitQ(act.dataset.q)}
+    if(a==='reset-model'){state.model=freshModel();saveState();refreshHouse();const tm=$('#toolMount');tm.innerHTML=toolHTML(state.step);updateTool()}
+    if(a==='norm'){state.model.norm=!state.model.norm;refreshHouse();updateTool()}
+    if(a==='savepdf')savePDF();
+    if(a==='savejson')saveJSON();
+    if(a==='print'){try{window.print()}catch(err){}const msg=$('#saveMsg');if(msg)msg.textContent='If no print dialog appeared, use your browser menu: Print → Save as PDF.'}
+    return;
+  }
+  const go2=t.closest('[data-goto]');if(go2&&!go2.disabled){go(+go2.dataset.goto);return}
+  const opt=t.closest('[data-opt]');
+  if(opt&&!opt.disabled){const [id,i]=opt.dataset.opt.split(':');state.draft[id]=+i;saveState();refreshCard(id);return}
+  const cas=t.closest('[data-cas]');if(cas){state.cas=+cas.dataset.cas;updateTool();return}
+  const cell=t.closest('[data-cell]');
+  if(cell){const [i,j]=cell.dataset.cell.split('-').map(Number);const nx={0:1,1:3,3:9,9:0};state.model.R[i][j]=nx[state.model.R[i][j]];saveState();refreshHouse();readCell(i,j);updateTool();return}
+  const rc=t.closest('[data-roofcell]');
+  if(rc){const key=rc.dataset.roofcell;const nx={'0':3,'3':9,'9':-3,'-3':-9,'-9':0};const cur=state.model.roof[key]||0;state.model.roof[key]=nx[String(cur)];saveState();refreshHouse();readRoof(key);return}
+  const dc=t.closest('[data-dircell]');
+  if(dc){const j=+dc.dataset.dircell;state.model.dir[j]=state.model.dir[j]==='up'?'down':'up';saveState();refreshHouse();const r=$('#readout');if(r)r.innerHTML=`<b>${esc(HOWS[j].name)}</b> (${HOWS[j].unit}): now <b>${state.model.dir[j]==='up'?'maximise ▲':'minimise ▼'}</b>.${state.model.dir[j]===HOWS[j].dir?'':' <span class="warn">That is the opposite of what a customer would want here.</span>'}`;return}
+  if(state.step===1){
+    const room=t.closest('[data-room]');
+    if(room){state.room=room.dataset.room;state.visited[state.room]=1;saveState();refreshHouse();updateTool();}
+  }
+});
+function readCell(i,j){const r=$('#readout');if(!r)return;const v=state.model.R[i][j];const w={0:'has no meaningful relationship with',1:'weakly affects',3:'moderately affects',9:'strongly affects'}[v];r.innerHTML=`Changing <b>${esc(HOWS[j].name)}</b> ${w} <b>${esc(NEEDS[i].name)}</b> (score ${v}). Contribution to TP: ${state.model.w[i]} × ${v} = <b>${state.model.w[i]*v}</b>.`}
+function readRoof(key){const r=$('#readout');if(!r)return;const [i,j]=key.split('-').map(Number);const v=state.model.roof[key]||0;r.innerHTML=`<b>${esc(HOWS[i].name)}</b> × <b>${esc(HOWS[j].name)}</b>: ${ROOFLAB[String(v)]}.`}
+document.addEventListener('mouseover',e=>{
+  const c=e.target.closest('[data-cell]');if(c&&STATIONS[state.step]&&STATIONS[state.step].tool==='matrix'){const [i,j]=c.dataset.cell.split('-').map(Number);readCell(i,j);return}
+  const r=e.target.closest('[data-roofcell]');if(r)readRoof(r.dataset.roofcell);
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.w!=null){state.model.w[+t.dataset.w]=+t.value;saveState();refreshHouse();updateTool();return}
+  if(t.dataset.us!=null){state.model.us[+t.dataset.us]=+t.value;saveState();refreshHouse();updateTool();return}
+  if(t.dataset.draft){const id=t.dataset.draft;state.draft[id]=t.value;saveState();
+    if(t.dataset.min){const c=$('#cnt-'+id);if(c)c.textContent=`${t.value.trim().length} / ${t.dataset.min} characters minimum`}}
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-cell],[data-roofcell],[data-dircell]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}
+});
+
+/* ============================== START ============================== */
+if(state.profile&&state.started&&state.step>=0){/* resume prompt */state.step=-1}
+render();
+</script>
+</body>
+</html>
